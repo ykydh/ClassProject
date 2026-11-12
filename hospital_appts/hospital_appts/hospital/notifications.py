@@ -1,38 +1,29 @@
-"""
-OWNER: Yutaro
-Class: Notifications  — produces the "User Notified" state in the diagram.
-For this activity, "sending" can just print and append to a log list
-(so tests can check what was sent).
-"""
-
 
 class Notifications:
+    messagesent = None
     def __init__(self):
-        # TODO: a list to record sent messages
-        pass
+        self.message = []
 
-    def sendConfirmation(self, appointment) -> None:
-        """UML: +sendConfirmation(a appointment): void
-        State: Appointment Scheduled --Notification Sent--> User Notified"""
-        raise NotImplementedError
+    def sendConfirmation(self, appointment: object) -> None:
+        print(f"Appoint Confirmation: {appointment.Date}\nStatus: {appointment.Status}")
+        self.message.append("Confirmation")
 
     def sendReminder(self, appointment) -> None:
-        """UML: +sendReminder(a appointment): void"""
-        raise NotImplementedError
+        print(f"Appoint Reminder: {appointment.Date}\nStatus: {appointment.Status}")
+        self.message.append("Reminder")
 
     def sendCancellation(self, appointment) -> None:
-        """UML: +sendCancellation(a Appointment): void
-        State: Appointment Cancelled --/ Cancellation Notification Sent--> User Notified"""
-        raise NotImplementedError
+        print(f"Appoint Cancellation: {appointment.Date}")
+        self.message.append("Cancellation")
 
     def sendRescheduleNotice(self, appointment) -> None:
-        """UML: +sendRescheduleNotice(a Appointment): void"""
-        raise NotImplementedError
+        print(f"Reschedule Note: {appointment.Date}\nStatus: {appointment.Status}")
+        self.message.append("Reschedule")
 
     def sendPaymentDeclined(self, bill) -> None:
-        """NOT in class model — state model has Bill Issued --[PaymentDeclined] / Notify Patient."""
-        raise NotImplementedError
+        print(f"Payment got declined check the billed amount.\nBill Amount: {bill.BillAmount}")
+        self.message.append("Payment Declined")
 
     def sendReceipt(self, bill) -> None:
-        """NOT in class model — state model has Billing Reviewed --Receipt Sent--> User Notified."""
-        raise NotImplementedError
+        print(f"Receipt has sent\n Bill Amount: {bill.BillAmount}")
+        self.message.append("Receipt Sent")
