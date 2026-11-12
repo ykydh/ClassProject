@@ -1,14 +1,15 @@
-"""
-OWNER: Yutaro
-Class: Department  |  -departmentID: string, -name: string
-(Used by Administrator.manageDepartments in users.py)
-"""
-
-
 class Department:
     def __init__(self, department_id: str, name: str):
-        # TODO: private attributes
-        pass
+        # Using a single leading underscore indicates a protected/private attribute
+        self._department_id = department_id
+        self._name = name
 
-    # TODO: the class model lists no operations. You'll need at least getters
-    # (or @property) so Administrator can use it. Note that as a revision.
+    @property
+    def department_id(self) -> str:
+        """Getter for department ID."""
+        return self._department_id
+
+    @property
+    def name(self) -> str:
+        """Getter for department name."""
+        return self._name
