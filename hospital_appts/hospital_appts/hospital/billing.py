@@ -1,38 +1,45 @@
-"""
-OWNER: Yutaro
-Billing branch of the state model:
-
-  Services Provided --[UserIsStaff]-->                   ISSUED
-  ISSUED --Patient Pays [PaymentDeclined] / Notify Patient--> ISSUED   (self-loop)
-  ISSUED --Patient Pays [PaymentApproved]-->            PAYMENT_RECEIVED
-  PAYMENT_RECEIVED -->                                  BILLING_REVIEWED
-  BILLING_REVIEWED --Receipt Sent-->                    (User Notified / final)
-  ISSUED --Notification Sent-->                         (User Notified)
-
-!! MODEL GAP: there is no Bill class in your Revised Final Class Model, but the
-state model has billing states. Either keep this class (and add it to the
-class model) or move these methods onto Appointment/Patient. Write down which.
-"""
-from hospital.states import BillStatus, InvalidTransition
-
+from hospital.states import BillStatus, AppointmentStatus
+import appointment
+import notifications
 
 class Bill:
-    def __init__(self, appointment, amount: float):
-        # TODO: link to appointment; status = ISSUED
-        # TODO: guard — only create if appointment is SERVICES_PROVIDED and
-        #       issued by staff [UserIsStaff]
-        pass
+    status = None
+    BillAmount = None
+    Balance = None
+    def __init__(self, appointment: object, amount: float):
+        #appointment has to be type hospital.AppointmentStatus
+        if appointment.getStatus() == AppointmentStatus.SERVICES_PROVIDED:
+            self.status = BillStatus.ISSUED
+            self.BillAmount = amount
+            self.Balance = self.BillAmount
+        else:
+            raise ValueError("Service has not provided yet")
+        
 
     def pay(self, payment: object, notifier) -> None:
-        """Patient Pays.
-        [PaymentDeclined] -> stay ISSUED, notifier.sendPaymentDeclined(self)
-        [PaymentApproved] -> PAYMENT_RECEIVED
-        TODO: decide what makes a payment approved (amount >= balance? a flag?)"""
-        raise NotImplementedError
+        if payment.PaymentAmount >= self.BillAmount:
+            self.Balance = payment.PaymentAmount - self.BillAmount 
+            self.status = BillStatus.PAYMENT_RECEIVED
+            if self.Balance > 0:
+                print(f"Refunded Amount:{self.Balance}")
+        else:
+            notifier.sendPaymentDeclined(self)
 
-    def review(self, notifier) -> None:
-        """PAYMENT_RECEIVED -> BILLING_REVIEWED, then notifier.sendReceipt(self)"""
-        raise NotImplementedError
+    def review(self, notifier: object) -> None:
+        print(f"Bill Status: {self.status}")
+        print(f"Bill Amount: {self.BillAmount}")
+        print(f"Balance: {self.Balance}")
+        self.status = BillStatus.BILLING_REVIEWED
+        notifier.sendReceipt(self)
+        
 
     def getStatus(self) -> BillStatus:
-        raise NotImplementedError
+        print(f"Bill Status: {self.status}")
+        return self.status
+
+class Payment:
+    PaymentAmount = None
+    def __init__(self,appointment,ammount):
+        if appointment.getStatus() == AppointmentStatus.SERVICES_PROVIDED:
+            self.PaymentAmount = ammount
+        

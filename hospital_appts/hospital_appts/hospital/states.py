@@ -1,10 +1,3 @@
-"""
-SHARED CONTRACT — owned by the whole team.
-Agree on these names in the first 5 minutes, then DON'T change them without
-telling everyone (other files import them).
-
-Source: "Revised Final State Model" diagram (10/29 doc).
-"""
 from enum import Enum
 
 
